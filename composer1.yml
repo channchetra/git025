@@ -1,0 +1,106 @@
+{
+    "services": [
+        {
+            "type": "app",
+            "data": {
+                "projectName": "MediaCMS",
+                "serviceName": "migrations",
+                "source": {
+                    "type": "image",
+                    "image": "mediacms/mediacms:latest"
+                },
+                "deploy": {
+                    "command": "./deploy/docker/prestart.sh"
+                },
+                "env": "ENABLE_UWSGI=no\nENABLE_NGINX=no\nENABLE_CELERY_SHORT=no\nENABLE_CELERY_LONG=no\nENABLE_CELERY_BEAT=no\nADMIN_USER=admin\nADMIN_EMAIL=admin@localhost",
+                "mounts": [
+                    {
+                        "type": "bind",
+                        "hostPath": "./",
+                        "mountPath": "/home/mediacms.io/mediacms/"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "app",
+            "data": {
+                "projectName": "MediaCMS",
+                "serviceName": "web",
+                "source": {
+                    "type": "image",
+                    "image": "mediacms/mediacms:latest"
+                },
+                "ports": [
+                    {
+                        "published": 80,
+                        "target": 80
+                    }
+                ],
+                "env": "ENABLE_CELERY_BEAT=no\nENABLE_CELERY_SHORT=no\nENABLE_CELERY_LONG=no\nENABLE_MIGRATIONS=no",
+                "mounts": [
+                    {
+                        "type": "bind",
+                        "hostPath": "./",
+                        "mountPath": "/home/mediacms.io/mediacms/"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "app",
+            "data": {
+                "projectName": "MediaCMS",
+                "serviceName": "celery_beat",
+                "source": {
+                    "type": "image",
+                    "image": "mediacms/mediacms:latest"
+                },
+                "env": "ENABLE_UWSGI=no\nENABLE_NGINX=no\nENABLE_CELERY_SHORT=no\nENABLE_CELERY_LONG=no\nENABLE_MIGRATIONS=no",
+                "mounts": [
+                    {
+                        "type": "bind",
+                        "hostPath": "./",
+                        "mountPath": "/home/mediacms.io/mediacms/"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "app",
+            "data": {
+                "projectName": "MediaCMS",
+                "serviceName": "celery_worker",
+                "source": {
+                    "type": "image",
+                    "image": "mediacms/mediacms:latest"
+                },
+                "env": "ENABLE_UWSGI=no\nENABLE_NGINX=no\nENABLE_CELERY_BEAT=no\nENABLE_MIGRATIONS=no",
+                "mounts": [
+                    {
+                        "type": "bind",
+                        "hostPath": "./",
+                        "mountPath": "/home/mediacms.io/mediacms/"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "postgres",
+            "data": {
+                "projectName": "MediaCMS",
+                "serviceName": "db",
+                "password": "mediacms",
+                "image": "postgres:15.2-alpine"
+            }
+        },
+        {
+            "type": "redis",
+            "data": {
+                "projectName": "MediaCMS",
+                "serviceName": "redis",
+                "image": "redis:alpine"
+            }
+        }
+    ]
+}
